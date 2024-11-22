@@ -4,7 +4,7 @@
 class Node {
   // Constructor
   constructor(key = null, value = null, nextNode = null) {
-    this.key = key
+    this.key = key;
     this.value = value;
     this.nextNode = nextNode;
   }
@@ -195,21 +195,59 @@ class HashMap {
   }
 
   get(key) {
-    if(this.bucket[this.hash(key)].header === undefined) return null
+    if (this.bucket[this.hash(key)].header === undefined) return null;
     let nodeLoop = this.bucket[this.hash(key)].header;
     while (nodeLoop !== null) {
-        if (nodeLoop.key === key){return nodeLoop.value}
-        else nodeLoop = nodeLoop.nextNode;
+      if (nodeLoop.key === key) {
+        return nodeLoop.value;
+      } else nodeLoop = nodeLoop.nextNode;
     }
     return null;
+  }
+  has(key) {
+    if (this.bucket[this.hash(key)].header === undefined) return false;
+    let nodeLoop = this.bucket[this.hash(key)].header;
+    while (nodeLoop !== null) {
+      if (nodeLoop.key === key) {
+        return true;
+      } else nodeLoop = nodeLoop.nextNode;
+    }
+    return false;
+  }
+  remove(key) {
+    if (this.has(key) === false) return false;
+    let nodeLoop = this.bucket[this.hash(key)].header;
+    while (nodeLoop.nextNode !== null) {
+      if (nodeLoop.nextNode.key === key) {
+        console.log(nodeLoop.nextNode);
+        console.log(nodeLoop.nextNode.nextNode);
+        nodeLoop.nextNode = nodeLoop.nextNode.nextNode;
+        return true;
+      } else if (nodeLoop.key === key) {
+        this.bucket[this.hash(key)] = new LinkedList();
+        this.bucket[this.hash(key)].prepend(
+          nodeLoop.nextNode.key,
+          nodeLoop.nextNode.value
+        );
+        this.bucket[this.hash(key)].header.nextNode =
+          nodeLoop.nextNode.nextNode;
+        return true;
+      }
+      nodeLoop = nodeLoop.nextNode;
+    }
+    return false;
   }
 }
 
 const test = new HashMap();
 
-test.set("apple", "red");
-test.set("Z", "blue");
-test.set("JT", "yellow");
+test.set("apple", "red"); // works
+test.set("Z", "blue"); // works
+test.set("JT", "yellow"); // works
+test.remove("JT");
 
 console.log(test.bucket);
-console.log(test.get("sdfZ"));
+// console.log(test.get("JT")); // works
+// console.log(test.get("sdfO")); // works
+// console.log(test.has("JT")); // works
+// console.log(test.has("sdfO")); // works
