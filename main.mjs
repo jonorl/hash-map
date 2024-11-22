@@ -3,7 +3,8 @@
 // Creates a node that's composed of a value and a pointer to its next node.
 class Node {
   // Constructor
-  constructor(value = null, nextNode = null) {
+  constructor(key = null, value = null, nextNode = null) {
+    this.key = key
     this.value = value;
     this.nextNode = nextNode;
   }
@@ -16,23 +17,23 @@ export class LinkedList {
     this.header = null;
   }
   // Adds a new node containing value to the end of the list.
-  append(value) {
+  append(key, value) {
     if (this.header === null) {
-      this.header = new Node(value);
+      this.header = new Node(key, value);
     } else {
       let nodeChecker = this.header;
       while (nodeChecker.nextNode !== null) {
         nodeChecker = nodeChecker.nextNode;
       }
-      nodeChecker.nextNode = new Node(value);
+      nodeChecker.nextNode = new Node(key, value);
     }
   }
   // Adds a new node containing value to the start of the list.
-  prepend(value) {
+  prepend(key, value) {
     if (this.header === null) {
-      this.header = new Node(value);
+      this.header = new Node(key, value);
     } else {
-      let tmp = new Node(value);
+      let tmp = new Node(key, value);
       tmp.nextNode = this.header;
       this.header = tmp;
     }
@@ -160,45 +161,55 @@ export class LinkedList {
 
 // Hash Map
 
-// Hash Map
-
 class HashMap {
-    // Constructor
-    constructor(loadFactor = 0.75, capacity = 16) {
-      this.loadFactor = loadFactor;
-      this.capacity = capacity;
-      this.bucket = [];
-      for (let i = 0; i < capacity; i++){
-        this.bucket.push(i)
-      }
-    }
-  
-    // Methods
-  
-    hash(key) {
-      let hashCode = 0;
-  
-      const primeNumber = 31;
-      for (let i = 0; i < key.length; i++) {
-        hashCode = (primeNumber * hashCode + key.charCodeAt(i)) % this.capacity;
-      }
-      console.log("hashValue: " + hashCode)
-      return hashCode ;
-    }
-  
-    set(key, value){
-        if(typeof(this.bucket[this.hash(key)]) === "number"){
-        this.bucket[this.hash(key)] = new LinkedList();
-        this.bucket[this.hash(key)].prepend(value);}
-        else {
-          this.bucket[this.hash(key)].append(value);
-        }
+  // Constructor
+  constructor(loadFactor = 0.75, capacity = 16) {
+    this.loadFactor = loadFactor;
+    this.capacity = capacity;
+    this.bucket = [];
+    for (let i = 0; i < capacity; i++) {
+      this.bucket.push(i);
     }
   }
-  
-  const test = new HashMap()
-  
-  test.set('apple', 'red')
-  test.set('Z', 'blue')
-  test.set('JT', 'yellow')
-  console.log(test.bucket)
+
+  // Methods
+
+  hash(key) {
+    let hashCode = 0;
+
+    const primeNumber = 31;
+    for (let i = 0; i < key.length; i++) {
+      hashCode = (primeNumber * hashCode + key.charCodeAt(i)) % this.capacity;
+    }
+    console.log("hashValue: " + hashCode);
+    return hashCode;
+  }
+
+  set(key, value) {
+    if (typeof this.bucket[this.hash(key)] === "number") {
+      this.bucket[this.hash(key)] = new LinkedList();
+      this.bucket[this.hash(key)].prepend(key, value);
+    } else {
+      this.bucket[this.hash(key)].append(key, value);
+    }
+  }
+
+  get(key) {
+    if(this.bucket[this.hash(key)].header === undefined) return null
+    let nodeLoop = this.bucket[this.hash(key)].header;
+    while (nodeLoop !== null) {
+        if (nodeLoop.key === key){return nodeLoop.value}
+        else nodeLoop = nodeLoop.nextNode;
+    }
+    return null;
+  }
+}
+
+const test = new HashMap();
+
+test.set("apple", "red");
+test.set("Z", "blue");
+test.set("JT", "yellow");
+
+console.log(test.bucket);
+console.log(test.get("sdfZ"));
