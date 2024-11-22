@@ -160,7 +160,9 @@ export class LinkedList {
 
 // Hash Map
 
-export class HashMap {
+// Hash Map
+
+class HashMap {
     // Constructor
     constructor(loadFactor = 0.75, capacity = 16) {
       this.loadFactor = loadFactor;
@@ -180,17 +182,23 @@ export class HashMap {
       for (let i = 0; i < key.length; i++) {
         hashCode = (primeNumber * hashCode + key.charCodeAt(i)) % this.capacity;
       }
-  
+      console.log("hashValue: " + hashCode)
       return hashCode ;
     }
   
     set(key, value){
-        let currentBucket = this.bucket[hash(key)];
-        currentBucket = new LinkedList();
-        currentBucket.prepend(value)
+        if(typeof(this.bucket[this.hash(key)]) === "number"){
+        this.bucket[this.hash(key)] = new LinkedList();
+        this.bucket[this.hash(key)].prepend(value);}
+        else {
+          this.bucket[this.hash(key)].append(value);
+        }
     }
   }
-
-const test = new HashMap()
-
-test.set('apple', 'red')
+  
+  const test = new HashMap()
+  
+  test.set('apple', 'red')
+  test.set('Z', 'blue')
+  test.set('JT', 'yellow')
+  console.log(test.bucket)
