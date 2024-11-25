@@ -174,6 +174,7 @@ class HashMap {
 
   // Methods
 
+  // Takes a key and produces a hash code with it.
   hash(key) {
     let hashCode = 0;
 
@@ -181,19 +182,26 @@ class HashMap {
     for (let i = 0; i < key.length; i++) {
       hashCode = (primeNumber * hashCode + key.charCodeAt(i)) % this.capacity;
     }
-    console.log("hashValue: " + hashCode);
+    // console.log("hashValue: " + hashCode);
     return hashCode;
   }
 
+  // takes two arguments: the first is a key, and the second is a value that is assigned to this key.
+  // If a key already exists, then the old value is overwritten, and we can say that we update the key’s value.
   set(key, value) {
     if (typeof this.bucket[this.hash(key)] === "number") {
       this.bucket[this.hash(key)] = new LinkedList();
       this.bucket[this.hash(key)].prepend(key, value);
     } else {
-      this.bucket[this.hash(key)].append(key, value);
+      if (this.bucket[this.hash(key)].header.key !== key) {
+        this.bucket[this.hash(key)].append(key, value);
+      }
+      else {
+        this.bucket[this.hash(key)].header.value = value;
     }
-  }
+  }}
 
+  // takes one argument as a key and returns the value that is assigned to this key. If a key is not found, return null.
   get(key) {
     if (this.bucket[this.hash(key)].header === undefined) return null;
     let nodeLoop = this.bucket[this.hash(key)].header;
@@ -204,6 +212,7 @@ class HashMap {
     }
     return null;
   }
+
   // Takes a key as an argument and returns true or false based on whether or not the key is in the hash map.
   has(key) {
     if (this.bucket[this.hash(key)].header === undefined) return false;
@@ -215,6 +224,9 @@ class HashMap {
     }
     return false;
   }
+
+  // Takes a key as an argument. If the given key is in the hash map, it should remove the entry with that key and return true.
+  // If the key isn’t in the hash map, it should return false.
   remove(key) {
     if (this.has(key) === false) return false;
     let nodeLoop = this.bucket[this.hash(key)].header;
@@ -237,6 +249,7 @@ class HashMap {
     return false;
   }
 
+  // Returns the number of stored keys in the hash map.
   length() {
     if (
       JSON.stringify(this.bucket) ===
@@ -258,14 +271,16 @@ class HashMap {
     return counter;
   }
 
-  clear(){
+  // Removes all entries in the hash map.
+  clear() {
     this.bucket = [];
     for (let i = 0; i < this.capacity; i++) {
       this.bucket.push(i);
     }
   }
 
-  keys(){
+  // Returns an array containing all the keys inside the hash map.
+  keys() {
     if (
       JSON.stringify(this.bucket) ===
       JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
@@ -286,7 +301,8 @@ class HashMap {
     return tmpArr;
   }
 
-  values(){
+  // Returns an array containing all the values.
+  values() {
     if (
       JSON.stringify(this.bucket) ===
       JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
@@ -307,6 +323,7 @@ class HashMap {
     return tmpArr;
   }
 
+  // Returns an array that contains each key, value pair.
   entries() {
     if (
       JSON.stringify(this.bucket) ===
@@ -343,17 +360,35 @@ class HashMap {
 
 const test = new HashMap();
 
-test.set("apple", "red"); // works
-test.set("Z", "blue"); // works
-test.set("JT", "yellow"); // works
+test.set('apple', 'red')
+test.set('banana', 'yellow')
+test.set('carrot', 'orange')
+test.set('dog', 'brown')
+test.set('elephant', 'gray')
+test.set('frog', 'green')
+test.set('grape', 'purple')
+test.set('hat', 'black')
+test.set('ice cream', 'white')
+test.set('jacket', 'blue')
+test.set('kite', 'pink')
+test.set('lion', 'golden')
+
+// test.set('apple', 'dasdjpo'); // works
+
+console.log(test.length());
+console.log(test.bucket);
+
+
+// test.set("Z", "blue"); // works
+// test.set("JT", "yellow"); // works
 // test.remove("apple");
 // test.remove("JT");
-test.entries();
+// test.entries();
 
-console.log(test.bucket);
-console.log(test.length());
-console.log(test.keys());
-console.log(test.values());
+
+// console.log(test.length());
+// console.log(test.keys());
+// console.log(test.values());
 // test.clear();
 // console.log(test.length());
 // console.log(test.get("JT")); // works
