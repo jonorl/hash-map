@@ -166,6 +166,7 @@ class HashMap {
   constructor(loadFactor = 0.75, capacity = 16) {
     this.loadFactor = loadFactor;
     this.capacity = capacity;
+    this.tmpCapacity = 0;
     this.bucket = [];
     for (let i = 0; i < capacity; i++) {
       this.bucket.push(i);
@@ -182,7 +183,7 @@ class HashMap {
     for (let i = 0; i < key.length; i++) {
       hashCode = (primeNumber * hashCode + key.charCodeAt(i)) % this.capacity;
     }
-    // console.log("hashValue: " + hashCode);
+    console.log(hashCode);
     return hashCode;
   }
 
@@ -195,11 +196,55 @@ class HashMap {
     } else {
       if (this.bucket[this.hash(key)].header.key !== key) {
         this.bucket[this.hash(key)].append(key, value);
-      }
-      else {
+      } else {
         this.bucket[this.hash(key)].header.value = value;
+      }
     }
-  }}
+    this.increaseCapacity();
+  }
+
+  // Helper method to increase capacity when loadFactor is > 0.75
+  increaseCapacity() {
+    this.loadFactor = this.length() / this.capacity;
+    if (this.loadFactor > 0.75) {
+      this.tmpCapacity = this.capacity
+      this.capacity *= 2;
+      let tempArray = [];
+      for (let i = 0; i < this.capacity; i++) {
+        tempArray.push(i);
+      }
+      this.bucket.forEach((element) => {
+        if (typeof element === "object") {
+          // add the object into the new bucket based on its new hash value
+
+          let key = element.header.key;
+          let value = element.header.value;
+          // console.log(key)
+          // console.log(value)
+
+          // FIX HERE!!! take objects from old bucket (this.bucket) and put them in the re-hashed tmp bucket (tempArray)
+          if (typeof this.bucket[this.tmpHash(key)] === "number") {
+            tempArray[this.hash(key)] = new LinkedList();
+            tempArray[this.hash(key)].append(key, value);
+          } else {
+            tempArray[this.hash(key)] = new LinkedList();
+            tempArray[this.hash(key)].append(key, value);
+        }}
+      });
+      this.bucket = tempArray;
+    }
+  }
+
+  tmpHash(key) {
+    let hashCode = 0;
+
+    const primeNumber = 31;
+    for (let i = 0; i < key.length; i++) {
+      hashCode = (primeNumber * hashCode + key.charCodeAt(i)) % this.tmpCapacity;
+    }
+    console.log("tmpHash: " + hashCode);
+    return hashCode;
+  }
 
   // takes one argument as a key and returns the value that is assigned to this key. If a key is not found, return null.
   get(key) {
@@ -251,10 +296,13 @@ class HashMap {
 
   // Returns the number of stored keys in the hash map.
   length() {
+    let blankArray = [];
+    for (let i = 0; i < this.capacity; i++) {
+      blankArray.push(i);
+    }
     if (
       JSON.stringify(this.bucket) ===
-      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-    )
+      JSON.stringify(blankArray))
       return 0;
     let counter = 0;
     for (let i = 0; i < this.bucket.length; i++) {
@@ -281,10 +329,13 @@ class HashMap {
 
   // Returns an array containing all the keys inside the hash map.
   keys() {
+    let blankArray = [];
+    for (let i = 0; i < this.capacity; i++) {
+      blankArray.push(i);
+    }
     if (
       JSON.stringify(this.bucket) ===
-      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-    )
+      JSON.stringify(blankArray))
       return "No keys found";
     let tmpArr = [];
     for (let i = 0; i < this.bucket.length; i++) {
@@ -303,11 +354,14 @@ class HashMap {
 
   // Returns an array containing all the values.
   values() {
+    let blankArray = [];
+    for (let i = 0; i < this.capacity; i++) {
+      blankArray.push(i);
+    }
     if (
       JSON.stringify(this.bucket) ===
-      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-    )
-      return "No keys found";
+      JSON.stringify(blankArray))
+      return 0;
     let tmpArr = [];
     for (let i = 0; i < this.bucket.length; i++) {
       if (typeof this.bucket[i] === "object") {
@@ -325,10 +379,13 @@ class HashMap {
 
   // Returns an array that contains each key, value pair.
   entries() {
+    let blankArray = [];
+    for (let i = 0; i < this.capacity; i++) {
+      blankArray.push(i);
+    }
     if (
       JSON.stringify(this.bucket) ===
-      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-    )
+      JSON.stringify(blankArray))
       return "empty list";
     let tmpArray = [];
     for (let i = 0; i < this.bucket.length; i++) {
@@ -360,31 +417,30 @@ class HashMap {
 
 const test = new HashMap();
 
-test.set('apple', 'red')
-test.set('banana', 'yellow')
-test.set('carrot', 'orange')
-test.set('dog', 'brown')
-test.set('elephant', 'gray')
-test.set('frog', 'green')
-test.set('grape', 'purple')
-test.set('hat', 'black')
-test.set('ice cream', 'white')
-test.set('jacket', 'blue')
-test.set('kite', 'pink')
-test.set('lion', 'golden')
+test.set("apple", "red");
+test.set("banana", "yellow");
+test.set("carrot", "orange");
+test.set("dog", "brown");
+test.set("elephant", "gray");
+test.set("frog", "green");
+test.set("grape", "purple");
+test.set("hat", "black");
+test.set("ice cream", "white");
+test.set("jacket", "blue");
+test.set("kite", "pink");
+test.set("lion", "golden");
+test.set("moon", "silver");
 
 // test.set('apple', 'dasdjpo'); // works
 
-console.log(test.length());
+console.log("length: " + test.length());
 console.log(test.bucket);
-
 
 // test.set("Z", "blue"); // works
 // test.set("JT", "yellow"); // works
 // test.remove("apple");
 // test.remove("JT");
 // test.entries();
-
 
 // console.log(test.length());
 // console.log(test.keys());
