@@ -265,6 +265,48 @@ class HashMap {
     }
   }
 
+  keys(){
+    if (
+      JSON.stringify(this.bucket) ===
+      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    )
+      return "No keys found";
+    let tmpArr = [];
+    for (let i = 0; i < this.bucket.length; i++) {
+      if (typeof this.bucket[i] === "object") {
+        let key = this.bucket[i].header.key;
+        let nodeLoop = this.bucket[this.hash(key)].header;
+        while (nodeLoop.nextNode !== null) {
+          tmpArr.push(nodeLoop.key);
+          nodeLoop = nodeLoop.nextNode;
+        }
+        tmpArr.push(nodeLoop.key);
+      }
+    }
+    return tmpArr;
+  }
+
+  values(){
+    if (
+      JSON.stringify(this.bucket) ===
+      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    )
+      return "No keys found";
+    let tmpArr = [];
+    for (let i = 0; i < this.bucket.length; i++) {
+      if (typeof this.bucket[i] === "object") {
+        let key = this.bucket[i].header.key;
+        let nodeLoop = this.bucket[this.hash(key)].header;
+        while (nodeLoop.nextNode !== null) {
+          tmpArr.push(nodeLoop.value);
+          nodeLoop = nodeLoop.nextNode;
+        }
+        tmpArr.push(nodeLoop.value);
+      }
+    }
+    return tmpArr;
+  }
+
   entries() {
     if (
       JSON.stringify(this.bucket) ===
@@ -310,8 +352,10 @@ test.entries();
 
 console.log(test.bucket);
 console.log(test.length());
-test.clear();
-console.log(test.length());
+console.log(test.keys());
+console.log(test.values());
+// test.clear();
+// console.log(test.length());
 // console.log(test.get("JT")); // works
 // console.log(test.get("sdfO")); // works
 // console.log(test.has("JT")); // works
