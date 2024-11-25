@@ -204,6 +204,7 @@ class HashMap {
     }
     return null;
   }
+  // Takes a key as an argument and returns true or false based on whether or not the key is in the hash map.
   has(key) {
     if (this.bucket[this.hash(key)].header === undefined) return false;
     let nodeLoop = this.bucket[this.hash(key)].header;
@@ -219,8 +220,6 @@ class HashMap {
     let nodeLoop = this.bucket[this.hash(key)].header;
     while (nodeLoop.nextNode !== null) {
       if (nodeLoop.nextNode.key === key) {
-        console.log(nodeLoop.nextNode);
-        console.log(nodeLoop.nextNode.nextNode);
         nodeLoop.nextNode = nodeLoop.nextNode.nextNode;
         return true;
       } else if (nodeLoop.key === key) {
@@ -237,6 +236,35 @@ class HashMap {
     }
     return false;
   }
+
+  entries () {
+    if (JSON.stringify(this.bucket) === JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])) return "empty list";
+    let tmpArray = [];
+    for (let i = 0; i < this.bucket.length; i++){
+      if (typeof(this.bucket[i]) === 'object') {
+        let key = this.bucket[i].header.key
+        let nodeLoop = this.bucket[this.hash(key)].header
+        let nodeArray = [];
+        let tmpString;
+        let tmpArray2 = []
+        while (nodeLoop.nextNode !== null) {
+          tmpArray2.push(nodeLoop.key);
+          tmpArray2.push(nodeLoop.value);
+          tmpString = tmpArray2.join()
+          tmpArray.push(tmpString);
+          tmpString = ''
+          tmpArray2 = []
+          nodeLoop = nodeLoop.nextNode;
+        }
+        tmpArray2.push(nodeLoop.key);
+        tmpArray2.push(nodeLoop.value);
+        tmpString = tmpArray2.join()
+        tmpArray.push(tmpString);
+        tmpArray = tmpArray.concat(nodeArray)
+        }
+      }
+      console.log(tmpArray)
+    }
 }
 
 const test = new HashMap();
@@ -244,7 +272,8 @@ const test = new HashMap();
 test.set("apple", "red"); // works
 test.set("Z", "blue"); // works
 test.set("JT", "yellow"); // works
-test.remove("JT");
+test.remove("apple");
+test.entries();
 
 console.log(test.bucket);
 // console.log(test.get("JT")); // works
