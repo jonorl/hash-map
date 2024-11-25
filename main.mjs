@@ -237,34 +237,66 @@ class HashMap {
     return false;
   }
 
-  entries () {
-    if (JSON.stringify(this.bucket) === JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])) return "empty list";
+  length() {
+    if (
+      JSON.stringify(this.bucket) ===
+      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    )
+      return 0;
+    let counter = 0;
+    for (let i = 0; i < this.bucket.length; i++) {
+      if (typeof this.bucket[i] === "object") {
+        let key = this.bucket[i].header.key;
+        let nodeLoop = this.bucket[this.hash(key)].header;
+        while (nodeLoop.nextNode !== null) {
+          counter++;
+          nodeLoop = nodeLoop.nextNode;
+        }
+        counter++;
+      }
+    }
+    return counter;
+  }
+
+  clear(){
+    this.bucket = [];
+    for (let i = 0; i < this.capacity; i++) {
+      this.bucket.push(i);
+    }
+  }
+
+  entries() {
+    if (
+      JSON.stringify(this.bucket) ===
+      JSON.stringify([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    )
+      return "empty list";
     let tmpArray = [];
-    for (let i = 0; i < this.bucket.length; i++){
-      if (typeof(this.bucket[i]) === 'object') {
-        let key = this.bucket[i].header.key
-        let nodeLoop = this.bucket[this.hash(key)].header
+    for (let i = 0; i < this.bucket.length; i++) {
+      if (typeof this.bucket[i] === "object") {
+        let key = this.bucket[i].header.key;
+        let nodeLoop = this.bucket[this.hash(key)].header;
         let nodeArray = [];
         let tmpString;
-        let tmpArray2 = []
+        let tmpArray2 = [];
         while (nodeLoop.nextNode !== null) {
           tmpArray2.push(nodeLoop.key);
           tmpArray2.push(nodeLoop.value);
-          tmpString = tmpArray2.join()
+          tmpString = tmpArray2.join();
           tmpArray.push(tmpString);
-          tmpString = ''
-          tmpArray2 = []
+          tmpString = "";
+          tmpArray2 = [];
           nodeLoop = nodeLoop.nextNode;
         }
         tmpArray2.push(nodeLoop.key);
         tmpArray2.push(nodeLoop.value);
-        tmpString = tmpArray2.join()
+        tmpString = tmpArray2.join();
         tmpArray.push(tmpString);
-        tmpArray = tmpArray.concat(nodeArray)
-        }
+        tmpArray = tmpArray.concat(nodeArray);
       }
-      console.log(tmpArray)
     }
+    console.log(tmpArray);
+  }
 }
 
 const test = new HashMap();
@@ -272,10 +304,14 @@ const test = new HashMap();
 test.set("apple", "red"); // works
 test.set("Z", "blue"); // works
 test.set("JT", "yellow"); // works
-test.remove("apple");
+// test.remove("apple");
+// test.remove("JT");
 test.entries();
 
 console.log(test.bucket);
+console.log(test.length());
+test.clear();
+console.log(test.length());
 // console.log(test.get("JT")); // works
 // console.log(test.get("sdfO")); // works
 // console.log(test.has("JT")); // works
