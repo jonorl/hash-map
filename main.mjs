@@ -223,6 +223,7 @@ class HashMap {
           // console.log(value)
 
           // FIX HERE!!! take objects from old bucket (this.bucket) and put them in the re-hashed tmp bucket (tempArray)
+          // probably nested objected in the LinkedList are being ommitted.
           if (typeof this.bucket[this.tmpHash(key)] === "number") {
             tempArray[this.hash(key)] = new LinkedList();
             tempArray[this.hash(key)].append(key, value);
