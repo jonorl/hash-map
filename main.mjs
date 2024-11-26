@@ -215,31 +215,32 @@ class HashMap {
   // Helper method to increase capacity when loadFactor is > 0.75
   increaseCapacity() {
     this.loadFactor = this.length() / this.capacity;
-    if (this.loadFactor > 0.75) {
-      this.tmpCapacity = this.capacity;
+    this.tmpCapacity = this.capacity;
+    while (this.loadFactor > 0.75) {
       this.capacity *= 2;
-      let tempArray = [];
-      for (let i = 0; i < this.capacity; i++) {
-        tempArray.push(i);
-      }
-      this.bucket.forEach((element) => {
-        if (typeof element === "object") {
-          element = element.header;
-          while (element.nextNode !== null) {
-            let key = element.key;
-            let value = element.value;
-            this.tmpSet(tempArray, key, value);
-            element = element.nextNode;
-          }
+      this.loadFactor = this.length() / this.capacity;
+    }
+    let tempArray = [];
+    for (let i = 0; i < this.capacity; i++) {
+      tempArray.push(i);
+    }
+    this.bucket.forEach((element) => {
+      if (typeof element === "object") {
+        element = element.header;
+        while (element.nextNode !== null) {
           let key = element.key;
           let value = element.value;
           this.tmpSet(tempArray, key, value);
+          element = element.nextNode;
         }
-      });
-      this.bucket = tempArray;
-      tempArray = [];
+        let key = element.key;
+        let value = element.value;
+        this.tmpSet(tempArray, key, value);
+      }
+    });
+    this.bucket = tempArray;
+    tempArray = [];
     }
-  }
 
   tmpHash(key) {
     let hashCode = 0;
