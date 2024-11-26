@@ -193,10 +193,20 @@ class HashMap {
       this.bucket[this.hash(key)] = new LinkedList();
       this.bucket[this.hash(key)].prepend(key, value);
     } else {
-      if (this.bucket[this.hash(key)].header.key !== key) {
+      // FIX THIS!!! check if any of the children have the same key
+      let nodeLoop = this.bucket[this.hash(key)].header;
+      while (nodeLoop.nextNode !== null) {
+        if (nodeLoop.key !== key && nodeLoop.nextNode === null) {
+          this.bucket[this.hash(key)].append(key, value);
+        } else if ((nodeLoop.key === key && nodeLoop.nextNode === null)){
+          this.bucket[this.hash(key)].header.value = value;
+        }
+        nodeLoop = nodeLoop.nextNode;
+      }
+      if (nodeLoop.key !== key && nodeLoop.nextNode === null) {
         this.bucket[this.hash(key)].append(key, value);
-      } else {
-        this.bucket[this.hash(key)].header.value = value;
+      } else if ((nodeLoop.key === key && nodeLoop.nextNode === null)){
+        nodeLoop.value = value;
       }
     }
     this.increaseCapacity();
@@ -215,18 +225,19 @@ class HashMap {
       this.bucket.forEach((element) => {
         if (typeof element === "object") {
           element = element.header;
-          while(element.nextNode !== null){
+          while (element.nextNode !== null) {
             let key = element.key;
             let value = element.value;
-            this.tmpSet(tempArray, key, value)
-            element = element.nextNode
+            this.tmpSet(tempArray, key, value);
+            element = element.nextNode;
           }
           let key = element.key;
           let value = element.value;
-          this.tmpSet(tempArray, key, value)
+          this.tmpSet(tempArray, key, value);
         }
       });
       this.bucket = tempArray;
+      tempArray = [];
     }
   }
 
@@ -281,6 +292,7 @@ class HashMap {
   // Takes a key as an argument. If the given key is in the hash map, it should remove the entry with that key and return true.
   // If the key isn’t in the hash map, it should return false.
   remove(key) {
+  
     if (this.has(key) === false) return false;
     let nodeLoop = this.bucket[this.hash(key)].header;
     while (nodeLoop.nextNode !== null) {
@@ -299,6 +311,9 @@ class HashMap {
       }
       nodeLoop = nodeLoop.nextNode;
     }
+    if (nodeLoop.key === key) {
+      this.bucket[this.hash(key)] = this.hash(key);
+      return true;}
     return false;
   }
 
@@ -327,7 +342,7 @@ class HashMap {
   // Removes all entries in the hash map.
   clear() {
     this.bucket = [];
-    for (let i = 0; i < this.capacity; i++) {
+    for (let i = 0; i < 16; i++) {
       this.bucket.push(i);
     }
   }
@@ -409,6 +424,7 @@ class HashMap {
         tmpArray = tmpArray.concat(nodeArray);
       }
     }
+    return tmpArray
   }
 }
 
@@ -427,25 +443,14 @@ test.set("jacket", "blue");
 test.set("kite", "pink");
 test.set("lion", "golden");
 test.set("moon", "silver");
-
-// test.set('apple', 'dasdjpo'); // works
-
-// console.log("length: " + test.length());
-console.log(test.bucket);
-console.log("length: " + test.length());
+test.set("lion", "furry");
+test.set("apple", "asdasdsa");
 
 // test.set("Z", "blue"); // works
 // test.set("JT", "yellow"); // works
-// test.remove("apple");
-// test.remove("JT");
-// test.entries();
 
-// console.log(test.length());
-// console.log(test.keys());
-// console.log(test.values());
-// test.clear();
-// console.log(test.length());
-// console.log(test.get("JT")); // works
-// console.log(test.get("sdfO")); // works
-// console.log(test.has("JT")); // works
-// console.log(test.has("sdfO")); // works
+// console.log(test.has("apple"))
+// console.log(test.remove("apple"))
+// test.remove("lion")
+console.log(test.bucket);
+console.log(test.length());
